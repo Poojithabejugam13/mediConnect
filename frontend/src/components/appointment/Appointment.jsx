@@ -38,7 +38,6 @@ const Appointment = () => {
         setDoctor("");
         setAddress("");
     }
-
     return (
         <>
             <div className="container form-component appointment-form" style={{ marginLeft: "25vw", marginTop: "10vh", marginBottom: "10vh" }}>
