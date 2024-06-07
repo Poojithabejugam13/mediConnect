@@ -1,4 +1,5 @@
 import  'bootstrap/dist/css/bootstrap.css';
+import './App.css'
 import { createBrowserRouter,RouterProvider } from "react-router-dom";
 import Root from './Root';
 import Home from './components/home/Home';
@@ -6,7 +7,10 @@ import Appointment from './components/appointment/Appointment'
 import About from './components/about/About'
 import Login from './components/login/Login'
 import Register from './components/register/Register'
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
 function App() {
+  
   let router=createBrowserRouter([
     {
       path:'',
@@ -35,9 +39,11 @@ function App() {
       ]
     }
   ])
+  
   return (
     <div className="App">
       <RouterProvider router={router}/>
+      <ToastContainer position='top-center'/>
     </div>
   );
 }
