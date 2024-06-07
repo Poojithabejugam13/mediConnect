@@ -1,5 +1,5 @@
 import  'bootstrap/dist/css/bootstrap.css';
-import { createBrowserRouter,Navigate,RouterProvider } from "react-router-dom";
+import { createBrowserRouter,RouterProvider } from "react-router-dom";
 import Root from './Root';
 function App() {
   let router=createBrowserRouter([
