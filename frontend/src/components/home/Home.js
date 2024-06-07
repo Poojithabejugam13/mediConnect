@@ -82,7 +82,7 @@ function Home() {
       </div>
       <div className='container departments'>
       <h2>Departments</h2>
-      <Carousel responsive={responsive} >
+      <Carousel responsive={responsive} removeArrowOnDeviceType={["medium","small"]}>
       {departmentsArray.map((depart, index) => {
             return (
               <div key={index} className="card1">

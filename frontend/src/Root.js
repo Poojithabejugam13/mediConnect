@@ -5,7 +5,7 @@ function Root() {
   return (
     <div>
       <Header></Header>
-        <div className='' style={{minHeight:'98vh'}}>
+        <div className='' style={{minHeight:'88vh'} }>
             <Outlet></Outlet>
         </div>
     </div>
