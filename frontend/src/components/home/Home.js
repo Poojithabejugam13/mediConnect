@@ -2,43 +2,55 @@ import React from 'react'
 import img from '../home/image.png'
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+import cardios from './departments/cardio.jpg'
+import derma from './departments/derma.jpg'
+import ent from './departments/ent.jpg'
+import neuro from './departments/neuro.jpg'
+import onco from './departments/onco.jpg'
+import ortho from './departments/ortho.jpg'
+import pedia from './departments/pedia.jpg'
+import radio from './departments/radio.jpg'
+import therapy from './departments/therapy.jpg'
+import { useDispatch,useSelector } from 'react-redux';
+
 function Home() {
+  let {isLogin,errOccurred,errMes,currentpatient}=useSelector(state=>state.patientAuthorLoginSlice)
   const departmentsArray = [
     {
       name: "Pediatrics",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/pedia.jpg?raw=true",
+      imageUrl:pedia,
     },
     {
       name: "Orthopedics",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/ortho.jpg?raw=true",
+      imageUrl: ortho,
     },
     {
       name: "Cardiology",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/cardio.jpg?raw=true",
+      imageUrl: cardios,
     },
     {
       name: "Neurology",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/neuro.jpg?raw=true",
+      imageUrl: neuro,
     },
     {
       name: "Oncology",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/onco.jpg?raw=true",
+      imageUrl: onco,
     },
     {
       name: "Radiology",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/radio.jpg?raw=true",
+      imageUrl:radio,
     },
     {
       name: "Physical Therapy",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/therapy.jpg?raw=true",
+      imageUrl: therapy,
     },
     {
       name: "Dermatology",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/derma.jpg?raw=true",
+      imageUrl: derma,
     },
     {
       name: "ENT",
-      imageUrl: "https://github.com/Zeeshu911/MERN-Stack-Hospital-Management-System-Web-Application/blob/main/frontend/public/departments/ent.jpg?raw=true",
+      imageUrl: ent,
     },
   ];
 
@@ -68,7 +80,10 @@ function Home() {
     <div>
       <div className="hero container">
         <div className="banner">
-          <h2>welcom to</h2>
+          <div>
+          <h2>Welcome to MediConnect</h2>
+          <p className='' style={{marginLeft:"20vh",fontFamily:"cursive",color:"#90d6af"}}>Streamlining   Healthcare Access and Management</p>
+          </div>
           <p>
             Lorem, ipsum dolor sit amet consectetur adipisicing elit.
             Reprehenderit doloremque, pariatur praesentium earum delectus eos

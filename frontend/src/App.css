@@ -171,11 +171,11 @@ h6 {
 .form-component form {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 .form-component form div {
   display: flex;
-  gap: 30px;
+  gap: 20px;
 }
 .form-component form input,
 .form-component form select,
@@ -318,7 +318,7 @@ footer .content {
 footer .content div {
   flex: 1;
 }
-footer .content div:nth-child(3) {
+footer .content div:nth-child(2) {
   flex: 2;
 }
 footer .content div h4 {
@@ -328,7 +328,7 @@ footer .content div h4 {
 footer .content div ul {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 footer .content div ul a {
   color: gray;
@@ -349,7 +349,7 @@ footer .content div ul li span:first-child {
 footer .content div:last-child div {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 10px;
 }
 footer .content div:last-child div svg {
@@ -582,8 +582,110 @@ input[type="time"]:before {
   margin-right: 0.5em;
 }
 .logo-img{
-  width: 150px;
+  width: 70px;
 }
 footer .logo-img{
   width: 100%;
+}
+.PreviousApp .banner:last-child {
+  height: 65vh;
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px;
+}
+.PreviousApp .banner table {
+  width: 100%;
+  color: #111;
+  font-size: 20px;
+}
+.PreviousApp .banner table select {
+  font-size: 20px;
+  border: none;
+  width: 100%;
+  font-weight: 600;
+}
+.PreviousApp table td svg{
+  display: flex;
+  margin: 0 auto;
+}
+.PreviousApp table td .green{
+  font-size: 20px;
+  color: #16a34a;
+}
+.PreviousApp table td .red{
+  font-size: 20px;
+  color: #dc2626;
+}
+.PreviousApp .banner table select:focus {
+  outline: none;
+}
+.PreviousApp .banner table .value-pending {
+  color: #eab308;
+}
+.PreviousApp .banner table .value-accepted {
+  color: #16a34a;
+}
+.PreviousApp .banner table .value-rejected {
+  color: #dc2626;
+}
+.PreviousApp .banner table thead {
+  text-align: justify;
+  padding: 12px 0;
+}
+.dashboard .banner table thead th {
+  padding: 12px 0;
+}
+.dashboard .banner table tbody td {
+  padding: 12px 0;
+}
+
+.doctors h1 {
+  color: #3939d9f2;
+  margin-bottom: 30px;
+  font-size: 2.3rem;
+}
+.doctors .banner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  grid-gap: 20px;
+}
+.doctors .banner .card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.doctors .banner .card img {
+  width: 270px;
+  height: 270px;
+  border-radius: 100%;
+  margin-bottom: 20px;
+}
+.doctors .banner .card h4 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+.doctors .banner .card div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 20px;
+}
+.doctors .banner .card div p {
+  font-weight: 700;
+}
+.doctors .banner .card div p span {
+  font-weight: 500;
+}
+
+@media (max-width: 350px) {
+  .doctors .banner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    grid-gap: 20px;
+  }
 }

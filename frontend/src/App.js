@@ -9,6 +9,16 @@ import Login from './components/login/Login'
 import Register from './components/register/Register'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
+import PreviousAppointments from './components/appointment/PreviousAppointments';
+import Documents from './components/documents/Documents';
+
+import { pdfjs } from 'react-pdf';
+import ChatBot from './components/chat/ChatBot';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 function App() {
   
   let router=createBrowserRouter([
@@ -22,10 +32,15 @@ function App() {
         },
         {
           path:"appointment",
-          element:<Appointment></Appointment>
+          element:<Appointment></Appointment>,
+          
         },
         {
-          path:"aboutus",
+          path:"previousAppointments",
+          element:<PreviousAppointments></PreviousAppointments>
+        },
+        {
+          path:"consultants",
           element:<About></About>
         },
         {
@@ -35,6 +50,10 @@ function App() {
         {
           path:"register",
           element:<Register></Register>
+        },
+        {
+          path:"document/:doctorName",
+          element:<Documents></Documents>
         }
       ]
     }
@@ -43,6 +62,7 @@ function App() {
   return (
     <div className="App">
       <RouterProvider router={router}/>
+      <ChatBot></ChatBot>
       <ToastContainer position='top-center'/>
     </div>
   );

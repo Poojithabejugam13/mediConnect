@@ -1,0 +1,9 @@
+doctor accepted mail with password
+
+change password
+
+appointement doctors only with status accepted
+
+doctors dashbord with only that doctor
+
+when rejected delete
