@@ -52,7 +52,7 @@ const chatApp=require('./Api/chat')
 const mongoClient=require('mongodb').MongoClient
 
 // MongoDB Atlas connection string
-const MONGODB_URI = "mongodb+srv://medi:connect@cluster0.zwixlml.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const MONGODB_URI = "process.env.DB_PORT"
 
 mongoClient.connect(MONGODB_URI)
 .then((client)=>{
