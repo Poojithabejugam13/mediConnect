@@ -51,8 +51,8 @@ Content-Type: application/json
 {
     "FirstName":"abhilash",
     "LastName":"banda",
-    "password":"abhi",
-    "email":"abhilash@gmail.com",
+    "password":"abhilash",
+    "email":"abhilashbanda7@gmail.com",
     "DOB":"01-01-0000",
     "gender":"male",
     "mobile":12345

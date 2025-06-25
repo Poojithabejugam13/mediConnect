@@ -1,191 +1,170 @@
-import React, { useEffect, useState } from 'react'
+import { FiUsers, FiCalendar, FiCheckSquare } from "react-icons/fi";
+import React, { useEffect, useState, useContext } from 'react'
 import axios from 'axios';
 import { GoCheckCircleFill } from "react-icons/go";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PopUp from '../popUp/PopUp';
-import img from './image.png'
 import TimeForm from '../timeForm/TimeForm';
+import './Dashboard.css';
+import { ApiUrlContext } from '../../App';
+
 function Dashboard() {
-  let {isLoginDoctor,errOccurredDoctor,errMesDoctor,currentDoctor}=useSelector(state=>state.doctorAuthorLoginSlice)
-  let {isLoginAdmin,errOccurredAdmin,errMesAdmin,currentAdmin}=useSelector(state=>state.adminAuthorLoginSlice)
-  let [appointments,setAppointments]=useState([])
+  const { isLoginDoctor, currentDoctor } = useSelector(state => state.doctorAuthorLoginSlice);
+  const { isLoginAdmin, currentAdmin } = useSelector(state => state.adminAuthorLoginSlice);
+  const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
-  const [openPopUp,setPopUp]=useState(false)
-   async function get(){
-    
-      const { data } = await axios.get(
-        "http://localhost:4000/doctor-api/doctors"
-      );
-      setDoctors(data.doctors);
-      // console.log(doctors.avthar);
-    if(isLoginAdmin){
-      let res=await axios.get(`http://localhost:4000/patient-api/Appointment`)
-      if(res.data.message==="Previous appointments"){
-          setAppointments(res.data.Appointments)
-      }
-    }
-    if(isLoginDoctor){
-      let res=await axios.get(`http://localhost:4000/patient-api/Appointments/${currentDoctor.FirstName+""+currentDoctor.LastName}`)
-      if(res.data.message==="Current Doctor appoientments"){
-          setAppointments(res.data.CurrentDoctorAppointments)
-      }
-    }
-   }
-  useEffect(()=>{
-    get()
-},[])
-async function handleUpdateStatus(id,status){
-  console.log(id,status);
-    let res=await axios.put(`http://localhost:4000/patient-api/update/${id}`,{ status })
-    // console.log(res);
-    setAppointments((prevAppointments) =>
-      prevAppointments.map((appointment) =>
-        appointment._id === id
-          ? { ...appointment, status }
-          : appointment
-      )
-    );
-    if (status==="Accepted"){
-      setPopUp(true)
-    }
+  const [openPopUp, setPopUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const apiUrl = useContext(ApiUrlContext);
 
-}
-  return (
-    <div>
-        <>
-      <section className="dashboard page">
-        <div className="banner">
-        {
-              isLoginDoctor===true &&<div className="firstBox ">
-           
-              <img src={currentDoctor.avthar} alt="docImg" className='p-5' style={{padding:"5px 10px 10px 0px", borderRadius:"30%"}} />
-              <div className="content">
-                <div>
-                  <p>Hello,</p>
-                  <h5>Dr.
-                      {currentDoctor.FirstName} {currentDoctor.LastName}
-                  </h5>
-                </div>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Facilis, nam molestias.
-                </p>
-              </div>
-            </div>
-        }
-        {
-              isLoginAdmin===true &&<div className="firstBox ">
-           
-              <img src="https://static.vecteezy.com/system/resources/thumbnails/009/636/683/small_2x/admin-3d-illustration-icon-png.png" alt="docImg" className='p-5' style={{padding:"5px 10px 10px 0px", borderRadius:"30%"}} />
-              <div className="content">
-                <div >
-                  <p>Hello,</p>
-                  <h5>
-                      {currentAdmin.FirstName} {currentAdmin.LastName}
-                  </h5>
-                </div>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Facilis, nam molestias.
-                 
-                </p>
-              </div>
-            </div>
-        }
-          
-          <div className="secondBox">
-            <p>Total Appointments</p>
-            <h3>{appointments.length}</h3>
-          </div>
+  const defaultAvatar = 'https://t4.ftcdn.net/jpg/02/27/45/09/360_F_227450952_KQCMShHPOPebUXklULsKsROk5AvN6H1H.jpg';
 
-          <div className="thirdBox">
-            <p>Registered Doctors</p>
-            <h3>{doctors.length}</h3>
-          </div>
-        </div>
-        <div className="banner">
-          <h5>Appointments</h5>
-          <table>
-            <thead>
-              <tr>
-                <th>Patient</th>
-                <th>Date</th>
-                <th>Doctor</th>
-                <th>Department</th>
-                <th>Status</th>
-                {/* <th>Visited</th> */}
-              </tr>
-            </thead>
-            <tbody>
-              {appointments && appointments.length > 0
-                ? appointments.map((appointment) => (
-                    <tr key={appointment._id}>
-                      <td>{`${appointment.FirstName} ${appointment.LastName}`}</td>
-                      <td>{appointment.dateOfAppointment.substring(0, 16)}</td>
-                      <td>{`${appointment.doctor}`}</td>
-                      <td>{appointment.department}</td>
-                        {
-                          isLoginDoctor==true &&
-                      <td>
-                        <select
-                          className={
-                            appointment.status === "Pending"
-                              ? "value-pending"
-                              : appointment.status === "Accepted"
-                              ? "value-accepted"
-                              : "value-rejected"
-                          }
-                          value={appointment.status}
-                          onChange={(e) =>
-                            handleUpdateStatus(appointment._id, e.target.value)
-                          }
-                        >
-                          <option value="Pending" className="value-pending">
-                            Pending
-                          </option>
-                          <option value="Accepted" className="value-accepted">
-                            Accepted
-                          </option>
-                          <option value="Rejected" className="value-rejected">
-                            Rejected
-                          </option>
-                        </select>
-                      </td>
-                        }
-                        {
-                          isLoginAdmin==true &&
-                          <td className={
-                            appointment.status === "Pending"
-                              ? "value-pending"
-                              : appointment.status === "Accepted"
-                              ? "value-accepted"
-                              : "value-rejected"
-                          }>
-                        
-                        {appointment.status}
-                      </td>
-                        }
-                      <td>{appointment.hasVisited === true ? <GoCheckCircleFill className="green"/> : <AiFillCloseCircle className="red"/>}</td>
-                    </tr>
-                  ))
-                : "No Appointments Found!"}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </>
-    {/* <PopUp
-    openPopUp={openPopUp}
-    setPopUp={setPopUp}
-    >
-      {
-        isLoginDoctor===true&&<TimeForm ></TimeForm>
+  const handleAvatarError = (e) => {
+    e.target.src = defaultAvatar;
+  };
+
+  async function get() {
+    try {
+      setLoading(true);
+      
+      // Fetch doctors list (for admin)
+      const { data } = await axios.get(`${apiUrl}/doctor-api/doctors`);
+      setDoctors(data.doctors || []);
+
+      // Fetch appointments based on user role
+      if (isLoginAdmin) {
+        console.log("Fetching appointments for admin");
+        let res = await axios.get(`${apiUrl}/patient-api/Appointment`);
+        if (res.data.message === "Previous appointments") {
+          console.log("Admin appointments:", res.data.Appointments);
+          setAppointments(res.data.Appointments || []);
+        }
       }
       
-    </PopUp> */}
+      if (isLoginDoctor && currentDoctor && currentDoctor._id) {
+        console.log("Fetching appointments for doctor with ID:", currentDoctor._id);
+        // Use doctor ID instead of name for more reliable fetching
+        let res = await axios.get(`${apiUrl}/patient-api/Appointments/${currentDoctor._id}`);
+        console.log("Doctor appointments response:", res.data);
+        if (res.data.message === "Current Doctor appointments") {
+          console.log("Doctor appointments:", res.data.CurrentDoctorAppointments);
+          setAppointments(res.data.CurrentDoctorAppointments || []);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if ((isLoginDoctor && currentDoctor) || (isLoginAdmin && currentAdmin)) {
+      get();
+    }
+  }, [isLoginDoctor, isLoginAdmin, currentDoctor, currentAdmin]);
+
+  async function handleUpdateStatus(id, status) {
+    try {
+      let res = await axios.put(`${apiUrl}/patient-api/update/${id}`, { status });
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment._id === id
+            ? { ...appointment, status }
+            : appointment
+        )
+      );
+      if (status === "Accepted") {
+        setPopUp(true);
+      }
+    } catch (err) {
+      console.error("Error updating appointment status:", err);
+    }
+  }
+
+  const user = isLoginDoctor ? currentDoctor : currentAdmin;
+  const recentAppointments = appointments.slice(0, 5);
+
+  const stats = isLoginAdmin ? [
+    { icon: <FiUsers />, value: doctors.length, label: 'Total Doctors', color: 'blue' },
+    { icon: <FiCalendar />, value: appointments.length, label: 'Total Appointments', color: 'green' },
+    { icon: <FiCheckSquare />, value: appointments.filter(a => a.status === 'Pending').length, label: 'Pending Requests', color: 'orange' },
+  ] : [
+    { icon: <FiCalendar />, value: appointments.length, label: 'Total Appointments', color: 'green' },
+    { icon: <FiCheckSquare />, value: appointments.filter(a => a.status === 'Pending').length, label: 'Pending Appointments', color: 'orange' },
+  ];
+
+  if (loading) {
+    return (
+      <div className="dashboard-redesigned">
+        <div className="dashboard-header-redesigned">
+          <div>
+            <h1>Loading dashboard...</h1>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-redesigned">
+      <div className="dashboard-header-redesigned">
+        <div>
+          <h1>Welcome, {user?.FirstName || 'User'}!</h1>
+          <p>Here's a summary of your dashboard.</p>
+        </div>
+        <div className="user-welcome-avatar">
+          <img 
+            src={user?.avthar || defaultAvatar}
+            alt="User Avatar"
+            onError={handleAvatarError}
+          />
+        </div>
+      </div>
+
+      <div className="stats-grid-redesigned">
+        {stats.map((stat, index) => (
+          <div key={index} className={`stat-card-redesigned ${stat.color}`}>
+            <div className="stat-icon-redesigned">{stat.icon}</div>
+            <div className="stat-info-redesigned">
+              <p>{stat.label}</p>
+              <h3>{stat.value}</h3>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="recent-activity-redesigned">
+        <h2>Recent Appointments</h2>
+        {recentAppointments.length > 0 ? (
+          <ul>
+            {recentAppointments.map((appointment) => (
+              <li key={appointment._id}>
+                <div className="activity-user">{`${appointment.FirstName} ${appointment.LastName}`}</div>
+                <div className="activity-action">
+                  {`Appointment with Dr. ${appointment.doctor} - ${appointment.department}`}
+                </div>
+                <div className="activity-time">
+                  {new Date(appointment.dateOfAppointment).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="no-data-message">No recent appointments found.</p>
+        )}
+      </div>
+
+      {openPopUp && <PopUp />}
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

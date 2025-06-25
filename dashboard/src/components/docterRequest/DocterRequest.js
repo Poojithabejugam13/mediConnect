@@ -1,68 +1,146 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { toast } from "react-toastify";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { FiFileText, FiCheckCircle, FiXCircle, FiClock, FiRefreshCw, FiMessageSquare } from "react-icons/fi";
+import './DocterRequest.css';
+import { ApiUrlContext } from '../../App';
+
 function DocterRequest() {
-    const [doctors, setDoctors] = useState([]);
-  let [doc,setdoc]=useState([])
-  let navigate=useNavigate()
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [showReturnMessage, setShowReturnMessage] = useState(false);
+  const navigate = useNavigate();
+  const apiUrl = useContext(ApiUrlContext);
+  
   const fetchDoctors = async () => {
-    
+    try {
+      setLoading(true);
       const { data } = await axios.get(
-        "http://localhost:4000/doctor-api/doctorsRequest"
+        `${apiUrl}/doctor-api/doctorsRequest`
       );
       setDoctors(data.doctors);
-  }
-  useEffect(() => {
-    
-    fetchDoctors();
-  },[]);
-
-  async function handleUpdateStatus(id,status,doctor){
-    console.log(doctor,id,status);
-    if(status==="Accepted"){
-        let res=await axios.post(`http://localhost:4000/admin-api/doctor`,doctor)
+    } catch (err) {
+      setError("Failed to fetch doctor requests");
+      console.error("Error fetching doctor requests:", err);
+    } finally {
+      setLoading(false);
     }
-    //   console.log(res);
-    //   setdoc((prevAppointments) =>
-    //     prevAppointments.map((appointment) =>
-    //       appointment._id === id
-    //         ? { ...appointment, status }
-    //         : appointment
-    //     )
-    //   );
-    navigate("/dashboard")
   }
+  
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  async function handleUpdateStatus(id, status, doctor) {
+    try {
+      if (status === "Accepted") {
+        await axios.post(`${apiUrl}/admin-api/doctor`, doctor);
+        toast.success(`Dr. ${doctor.FirstName} ${doctor.LastName} has been accepted`);
+      }
+      if (status === "Rejected") {
+        await axios.post(`${apiUrl}/admin-api/doctorReject`, doctor);
+        toast.info(`Dr. ${doctor.FirstName} ${doctor.LastName} has been rejected`);
+      }
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Failed to update doctor status");
+      console.error("Error updating doctor status:", err);
+    }
+  }
+  
   const showPdf = (pdf) => {
-    window.open(`http://localhost:4000/uploads/${pdf}`, "_blank", "noreferrer");
-    // setPdfFile(`/http://localhost:4000/uploads/${pdf}`)
-};
+    window.open(`${apiUrl}/uploads/${pdf}`, "_blank", "noreferrer");
+  };
+
+  const openReturnMessage = (doctor) => {
+    setSelectedDoctor(doctor);
+    setShowReturnMessage(true);
+  };
+
+  const closeReturnMessage = () => {
+    setSelectedDoctor(null);
+    setShowReturnMessage(false);
+  };
+  
+  if (loading) {
+    return (
+      <section className="doctors-request-section">
+        <div className="card">
+          <h1>Doctor Requests</h1>
+          <div className="loading-state">Loading doctor requests...</div>
+        </div>
+      </section>
+    );
+  }
+  
+  if (error) {
+    return (
+      <section className="doctors-request-section">
+        <div className="card">
+          <h1>Doctor Requests</h1>
+          <div className="error-state">{error}</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div><section className=" dashboard page">
-    <h1>DOCTORS REQUEST</h1>
-    <div className="banner">
-    <table>
+    <section className="doctors-request-section">
+      <div className="card">
+        <h1>Doctor Requests</h1>
+        <div className="table-responsive">
+          <table>
             <thead>
               <tr>
                 <th>Doctor</th>
                 <th>Department</th>
                 <th>Email</th>
+                <th>Type</th>
                 <th>Documents</th>
                 <th>Status</th>
-                {/* <th>Visited</th> */}
               </tr>
             </thead>
             <tbody>
               {doctors && doctors.length > 0
                 ? doctors.map((doctor) => (
-                    <tr key={doctor._id}>
-                      <td>{`${doctor.FirstName} ${doctor.LastName}`}</td>
-                      <td>{doctor.department}</td>
-                      <td>{`${doctor.email}`}</td>
-                      <td >
-                          <button type="button"  style={{width:"5rem",padding:"3px",marginLeft:"4px"}} onClick={()=>showPdf(doctor.docs)}>Read</button>
+                    <tr key={doctor._id} className={doctor.isReturningDoctor ? "returning-doctor-row" : ""}>
+                      <td data-label="Doctor">{`${doctor.FirstName} ${doctor.LastName}`}</td>
+                      <td data-label="Department">{doctor.department}</td>
+                      <td data-label="Email">{`${doctor.email}`}</td>
+                      <td data-label="Type">
+                        {doctor.isReturningDoctor ? (
+                          <div className="returning-doctor-badge">
+                            <FiRefreshCw className="returning-icon" />
+                            <span>
+                              {doctor.startedFresh ? "Returning (New)" : "Returning"}
+                            </span>
+                            {doctor.returnMessage && (
+                              <button 
+                                className="message-button"
+                                onClick={() => openReturnMessage(doctor)}
+                                title="View message from doctor"
+                              >
+                                <FiMessageSquare />
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <span>New</span>
+                        )}
                       </td>
-                      <td>
+                      <td data-label="Documents">
+                        <button 
+                          type="button" 
+                          className="doc-button"
+                          onClick={() => showPdf(doctor.docs)}
+                        >
+                          <FiFileText className="btn-icon" /> View
+                        </button>
+                      </td>
+                      <td data-label="Status">
                         <select
                           className={
                             doctor.status === "Pending"
@@ -73,62 +151,73 @@ function DocterRequest() {
                           }
                           value={doctor.status}
                           onChange={(e) =>
-                            handleUpdateStatus(doctor._id, e.target.value,doctor)
+                            handleUpdateStatus(doctor._id, e.target.value, doctor)
                           }
                         >
-                          <option value="Pending" className="value-pending">
-                            Pending
+                          <option value="Pending">
+                            <span className="option-icon"><FiClock /></span> Pending
                           </option>
-                          <option value="Accepted" className="value-accepted">
-                            Accepted
+                          <option value="Accepted">
+                            <span className="option-icon"><FiCheckCircle /></span> Accepted
                           </option>
-                          <option value="Rejected" className="value-rejected">
-                            Rejected
+                          <option value="Rejected">
+                            <span className="option-icon"><FiXCircle /></span> Rejected
                           </option>
                         </select>
                       </td>
-                        
-                        
                     </tr>
                   ))
-                : "No Doctors Requests are Found!"}
+                : <tr>
+                    <td colSpan="6" className="no-data">
+                      No doctor requests found. New registration requests will appear here.
+                    </td>
+                  </tr>}
             </tbody>
           </table>
-      {/* {doctors && doctors.length > 0 ? (
-        doctors.map((element) => {
-          return (
-            <div className="card">
-              <img
-                src={element.avthar}
-                alt="doctor avatar"
-              />
-              <h4>{`${element.FirstName} ${element.LastName}`}</h4>
-              <div className="details">
+        </div>
+      </div>
+
+      {/* Return Message Modal */}
+      {showReturnMessage && selectedDoctor && (
+        <div className="return-message-modal-overlay">
+          <div className="return-message-modal">
+            <div className="return-message-modal-header">
+              <h2>Message from Dr. {selectedDoctor.FirstName} {selectedDoctor.LastName}</h2>
+              <button className="close-button" onClick={closeReturnMessage}>×</button>
+            </div>
+            <div className="return-message-modal-body">
+              <p className="return-message-label">
+                <strong>Re-registration Message:</strong>
+              </p>
+              <div className="return-message-content">
+                {selectedDoctor.returnMessage || "No additional message provided."}
+              </div>
+              <div className="return-message-info">
                 <p>
-                  Email: <span>{element.email}</span>
+                  <strong>Registration Type:</strong> {selectedDoctor.startedFresh ? 
+                    "Starting fresh (new registration)" : 
+                    "Restoring previous data"}
                 </p>
                 <p>
-                  Phone: <span>{element.mobile}</span>
+                  <strong>Email:</strong> {selectedDoctor.email}
                 </p>
                 <p>
-                  DOB: <span>{element.dateOfBirth.substring(0, 10)}</span>
-                </p>
-                <p>
-                  Department: <span>{element.department}</span>
-                </p>
-                
-                <p>
-                  Gender: <span>{element.gender}</span>
+                  <strong>Department:</strong> {selectedDoctor.department}
                 </p>
               </div>
             </div>
-          );
-        })
-      ) : (
-        <h1>No Registered Doctors Found!</h1>
-      )} */}
-    </div>
-  </section></div>
+            <div className="return-message-modal-footer">
+              <button 
+                className="primary-button"
+                onClick={closeReturnMessage}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
   )
 }
 

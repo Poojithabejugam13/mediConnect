@@ -1,85 +1,65 @@
-import React, { useContext, useEffect } from 'react'
-// import { RiUser6Fill } from "react-icons/ri";
-// import { MdPassword } from "react-icons/md";
-// import { CiLogin } from "react-icons/ci";
-import { useForm } from "react-hook-form"
-import { UserContext } from '../../context/user';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useContext } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { patientAuthorThunk } from '../../Redux/slices/patientAuthSlice';
-import { useDispatch,useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { ApiUrlContext } from '../../App';
 
 function Login() {
-  let {register,handleSubmit,formState:{errors}}=useForm()
-  let {isLogin,errOccurred,errMes,currentpatient}=useSelector(state=>state.patientAuthorLoginSlice)
-  let [user,setUser]=useContext(UserContext)
-  let navigate=useNavigate();
-  let dispatch=useDispatch()
-  function setAut(credObj){
-    dispatch(patientAuthorThunk(credObj))
-    console.log(credObj);
-    
+  const { register, handleSubmit } = useForm();
+  const { isLogin, errOccurred, errMes } = useSelector(state => state.patientAuthorLoginSlice);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const apiUrl = useContext(ApiUrlContext);
+
+  function handleLogin(credObj) {
+    dispatch(patientAuthorThunk({ patientCredObj: credObj, apiUrl }));
   }
-  useEffect(()=>{
-    if(isLogin==true){
-      
-        navigate('/')
-      
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate('/');
     }
-    
-  },[isLogin])
+  }, [isLogin, navigate]);
+
   return (
-    <div>
-        <>
-      <div className="container form-component login-form">
-        <h2>Sign In</h2>
-        <p>Please Login To Continue</p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat culpa
-          voluptas expedita itaque ex, totam ad quod error?
-        </p>
-        <p>{errOccurred === true && (
-                <div className="text-center text-danger">
-                  <h6>{errMes}</h6>
-                </div>
-              )}
-        </p>
-        <form onSubmit={handleSubmit(setAut)}>
-          <input
-            type="text"
-            placeholder="Email"
-            // value={email}
-            {...register("email")}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            // value={password}
-            {...register("password")}
-          />
-          <div
-            style={{
-              gap: "10px",
-              justifyContent: "flex-end",
-              flexDirection: "row",
-            }}
-          >
-            <p style={{ marginBottom: 0 }}>Not Registered?</p>
-            <Link
-              to={"/register"}
-              style={{ textDecoration: "none", color: "#271776ca" }}
-            >
-              Register Now
-            </Link>
+    <div className="login-page">
+      <div className="login-container">
+        <h2 className="login-title">Sign In</h2>
+        <p className="login-subtitle">Welcome back! Please login to continue.</p>
+        
+        {errOccurred && (
+          <div className="error-message">
+            {errMes}
           </div>
-          <div style={{ justifyContent: "center", alignItems: "center" }}>
-            <button type="submit">Login</button>
+        )}
+
+        <form onSubmit={handleSubmit(handleLogin)} className="login-form">
+          <div className="form-group">
+            <input
+              type="email"
+              placeholder="Email"
+              {...register("email", { required: true })}
+              className="form-input"
+            />
           </div>
+          <div className="form-group">
+            <input
+              type="password"
+              placeholder="Password"
+              {...register("password", { required: true })}
+              className="form-input"
+            />
+          </div>
+          <button type="submit" className="btn login-btn">Login</button>
         </form>
+
+        <div className="register-link">
+          <p>Not Registered? <Link to={"/register"}>Register Now</Link></p>
+        </div>
       </div>
-    </>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

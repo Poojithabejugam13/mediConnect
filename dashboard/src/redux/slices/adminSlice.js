@@ -1,9 +1,9 @@
 import { createSlice,createAsyncThunk, isPending } from "@reduxjs/toolkit";
 import axios from "axios";
-export let adminAuthorThunk=createAsyncThunk('adminAuth',async(adminCredObj,thunkApi)=>{
+export let adminAuthorThunk=createAsyncThunk('adminAuth',async({adminCredObj, apiUrl},thunkApi)=>{
     try {
 
-       let res= await axios.post('http://localhost:4000/admin-api/login',adminCredObj)
+       let res= await axios.post(`${apiUrl}/admin-api/login`,adminCredObj)
        if(res.data.message==="Login success"){
             // localStorage.setItem("token",res.data.token)
             console.log("login success");

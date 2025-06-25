@@ -1,9 +1,9 @@
 import { createSlice,createAsyncThunk, isPending } from "@reduxjs/toolkit";
 import axios from "axios";
-export let doctorAuthorThunk=createAsyncThunk('doctorAuth',async(doctorCredObj,thunkApi)=>{
+export let doctorAuthorThunk=createAsyncThunk('doctorAuth',async({doctorCredObj, apiUrl},thunkApi)=>{
     try {
 
-       let res= await axios.post('http://localhost:4000/doctor-api/login',doctorCredObj)
+       let res= await axios.post(`${apiUrl}/doctor-api/login`,doctorCredObj)
        if(res.data.message==="Login success"){
             // localStorage.setItem("token",res.data.token)
             console.log("login success");
